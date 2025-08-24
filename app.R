@@ -1,8 +1,4 @@
-# Install the devtools package if you haven't already
-# install.packages("devtools")
-
-# Install ggradar from GitHub
-# devtools::install_github("ricardo-bion/ggradar", dependencies = TRUE)
+# app.R
 
 library(shiny)
 library(shinydashboard)
@@ -53,13 +49,7 @@ professional_qualities_ggradar <- data.frame(
   Collaborative = 95
 )
 
-research_interests <- c("Chronic Non-Communicable Diseases", "Nutrition", "Statistical Modeling", "Epidemiology", "Public Health Geoinformatics")
-
-publications <- data.frame(
-  Year = c(2020, 2021, 2022, 2023, 2024, 2025),
-  Title = c("Caribbean Cancer Mortality Analysis", "Dietary Sodium Intake Study", "Wavelet Analysis on Skin Blood Flow", "Barbados Streetscapes Project", "MSM Sexual Health Research", "Recent Advances in Vaccine Safety"),
-  Journal = c("WHO Database Journal", "Caribbean Health Review", "Biomedical Signals", "Epidemiology Quarterly", "Public Health Journal", "Vaccine Research")
-)
+research_interests <- c("Chronic Non-Communicable Diseases", "Built Environment", "Nutrition", "Statistical Modeling", "Epidemiology", "Public Health Geoinformatics", "Geospatial Modelling", "Vaccine Safety Surveillance", "Digital Health")
 
 phd_text <- "Pursuing PhD in Epidemiology at the University of the West Indies. Focus: Geoinformatics applications to public health. Thesis involves spatial analysis of health data."
 
@@ -125,25 +115,39 @@ ui <- dashboardPage(
              tags$h4(strong("FIND ME"), style = "margin-top: 10px; margin-bottom: 10px;"),
              div(
                class = "social",
-               a(href = "https://www.linkedin.com/in/kern-rocke-168b5636/",target="_blank", icon('linkedin', class = 'fa-3x', lib = "font-awesome"), style = "color: white;"),
-               a(href = "https://github.com/kernrocke", target="_blank", icon("github", class = "fa-3x", lib = "font-awesome"), style = "color: white;"),
-               a(href = "mailto:kernrocke@gmail.com",target="_blank", icon("envelope", class = 'fa-3x', lib = "font-awesome"), style = "color: white;")
+               a(href = "https://www.linkedin.com/in/kern-rocke-168b5636/", target = "_blank", icon('linkedin', class = 'fa-3x', lib = "font-awesome"), style = "color: white;"),
+               a(href = "https://github.com/kernrocke", target = "_blank", icon("github", class = "fa-3x", lib = "font-awesome"), style = "color: white;"),
+               a(href = "mailto:kernrocke@gmail.com", target = "_blank", icon("envelope", class = 'fa-3x', lib = "font-awesome"), style = "color: white;")
              ),
     )
   ),
   dashboardBody(
-    # Use tags$head to inject CSS to the header
+    # Use tags$head to inject CSS
     tags$head(
       tags$style(
         HTML("
-          /* Fix the sidebar position */
+          /* Make the main sidebar static and full-height */
           .main-sidebar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            bottom: 0;
+            position: fixed !important;
+            height: 100vh;
             overflow-y: auto;
-            height: 100vh; /* Ensure the sidebar takes full viewport height */
+          }
+          
+          /* Adjust the body content to prevent it from overlapping the fixed sidebar */
+          .content-wrapper, .right-side {
+            margin-left: 230px !important; 
+          }
+          
+          /* Adjust the header to prevent it from overlapping the body content */
+          .main-header {
+            position: fixed !important;
+            width: 100%;
+            z-index: 1000;
+          }
+
+          /* Add a top margin to the body to prevent content from being hidden behind the fixed header */
+          .content-wrapper {
+            padding-top: 50px; /* Adjust based on your header's height */
           }
         ")
       )
@@ -180,7 +184,7 @@ ui <- dashboardPage(
                      uiOutput("researchInterests")
                  ),
                  box(title = "Publications Over Time", width = 6, solidHeader = TRUE, status = "primary",
-                     plotlyOutput("pubPlot")
+                     plotOutput("pubPlot")
                  )
                ),
                fluidRow(
@@ -266,8 +270,14 @@ server <- function(input, output, session) {
     data
   })
   
+  # New reactive expression to read publications data from CSV
+  publications_data <- reactive({
+    data <- read.csv("data/publications.csv", stringsAsFactors = FALSE)
+    data
+  })
+  
   output$homeText <- renderText({ home_text })
-  output$skillsTable <- DT::renderDataTable({ 
+  output$skillsTable <- DT::renderDataTable({
     skills }, options = list(pageLength = 6, searching = FALSE, ordering = FALSE))
   
   output$qualitiesSpiderChart <- renderPlot({
@@ -320,20 +330,49 @@ server <- function(input, output, session) {
   output$softwareSkillsTable <- DT::renderDataTable({
     datatable(
       software_skills(),
-      options = list(pageLength = 10, searching = TRUE, ordering = TRUE),
-      colnames = c("Category", "Software Name", "Skill Level")
+      options = list(pageLength = 30, searching = TRUE, ordering = TRUE),
+      colnames = c("Software Name", "Skill Level", "Category")
     )
   })
   
+  # Corrected renderUI for research interests
   output$researchInterests <- renderUI({
-    HTML(paste("<ul>", paste("<li>", research_interests, "</li>", collapse = ""), "</ul>"))
+    tags$ul(
+      lapply(research_interests, tags$li)
+    )
   })
-  output$pubPlot <- renderPlotly({
-    plot_ly(publications, x = ~Year, y = ~rep(1, nrow(publications)), type = "bar", 
-            marker = list(color = "#1f77b4"), hoverinfo = "text", text = ~Title) %>%
-      layout(title = "Publications by Year", xaxis = list(title = "Year"), yaxis = list(title = "Count"))
+  
+  # Redo the plot using ggplot2
+  # Corrected to use renderPlot
+  output$pubPlot <- renderPlot({
+    pubs <- publications_data()
+    # Move the data preparation step inside renderPlot
+    pubs_count <- pubs %>% count(Year)
+    
+    # Create a data frame with all years from 2014 to 2025
+    all_years <- data.frame(Year = 2014:2025)
+    
+    # Join with publications data and replace NA counts with 0
+    pubs_full_timeline <- all_years %>%
+      left_join(pubs_count, by = "Year") %>%
+      replace_na(list(n = 0))
+    
+    # Create the bar chart using ggplot2
+    ggplot(pubs_full_timeline, aes(x = as.factor(Year), y = n)) +
+      geom_bar(stat = "identity", fill = "#de2d26") +
+      labs(title = "Publications by Year", x = "Year", y = "Count") +
+      geom_text(aes(label = round(n, 1), y = n * 1.01), vjust = -0.5, size = 5) + # Corrected variable and placement
+      theme_minimal() +
+      theme(
+        plot.title = element_text(hjust = 0.5, face = "bold"),
+        axis.title.x = element_text(face = "bold"),
+        axis.title.y = element_text(face = "bold")
+      ) +
+      scale_x_discrete(breaks = as.character(2014:2025))
   })
-  output$pubTable <- DT::renderDataTable({ publications }, options = list(pageLength = 5))
+  
+  # Update the pubTable to use the reactive data
+  output$pubTable <- DT::renderDataTable({ publications_data() }, options = list(pageLength = 25))
   
   output$phdText <- renderText({ phd_text })
   output$phdTimeline <- renderPlotly({
