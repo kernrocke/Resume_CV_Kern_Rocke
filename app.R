@@ -48,7 +48,7 @@ professional_qualities_ggradar <- data.frame(
 
 research_interests <- c("Chronic Non-Communicable Diseases", "Built Environment", "Nutrition", "Statistical Modeling", "Epidemiology", "Public Health Geoinformatics", "Geospatial Modelling", "Vaccine Safety Surveillance", "Digital Health", "Sports Competitve Balance")
 
-phd_text <- "Pursuing PhD in Epidemiology at the University of the West Indies. Focus: Geoinformatics applications to public health. Thesis involves spatial analysis of health data."
+phd_text <- "Pursuing PhD in Epidemiology at the University of the West Indies. Focus: Geoinformatics applications to public health and cardiovascular disease. Thesis involves spatial analysis of built environement and health data exploring from perspectives from marco -> micro -> individual level"
 
 phd_timeline <- data.frame(
   Year = c(2022, 2023, 2024, 2025),
@@ -378,9 +378,28 @@ server <- function(input, output, session) {
   
   output$experienceText <- renderUI({
     HTML(
-      "<h3>International Consultant & Epidemiologist</h3>
+     "<h3>Data Manager/Analyst Consultant</h3>
+        <p><strong>The Barbados National Registry – The George Alleyne Chronic Disease Research Centre, Bridgetown, Barbados</strong><br>
+        August 01, 2023 – Present</p>
+        <ul>
+        <li>Data cleaning and analysis of national cardiovascular disease registry data (2023)</li>
+        <li>Data cleaning and analysis of national cardiovascular disease registry data (2019-2022)</li>
+        <li>Developed analysis reports for data analysed from cardiovascular disease and cancer registries</li>
+        <li>Developed national HEARTS hypertension dashboard for the automatic analysis and generation of periodic reports</li>
+        <li>Lead the training in process for data cleaning and analysis on cardiovascular disease and cancer data</li>
+        <li>Support ad-hoc data analysis request from stakeholders on data related to Barbados National registry</li>
+        </ul>
+      <h3>Online Facilitator and Statistical Advisor (Part-time)</h3>
+      <p><strong>Caribbean Institute for Health Research (CAHIR), The University of the West Indies, Mona and Global Campus, Jamaica</strong><br>
+      August 01, 2020 – Present</p>
+      <ul>
+        <li>Support the teaching of postgraduate courses in the MSc Epidemiology and Human Research and Epidemiology postgraduate diploma programmes</li>
+        <li>Lead in the supervision of postgraduate student research projects from MSc Epidemiology and Human Research and Epidemiology postgraduate diploma programmes</li>
+        <li>Advise students and staff on statistical procedures and analysis related to epidemiology and surveillance projects</li>
+      </ul>  
+      <h3>International Consultant & Epidemiologist</h3>
       <p><strong>Comprehensive Immunization Program (CIM) – Pan American Health Organization, Washington, DC, USA</strong><br>
-      August 01, 2021 – Present</p>
+      August 01, 2021 – July 2024</p>
       <ul>
         <li>Serve as the focal point for all activities related to the strengthening of national vaccine surveillance systems in the 23 countries of English-speaking Caribbean sub-region</li>
         <li>Support of the conduct of national level face-face workshops on vaccine safety with stakeholders from each of the countries of the Caribbean</li>
@@ -391,26 +410,7 @@ server <- function(input, output, session) {
         <li>Provide ad-hoc technical support to immunization teams on surveillance activities related to immunization</li>
         <li>Co-lead the validation from Spanish to English on regional tools for strengthening national ESAVI surveillance systems</li>
       </ul>
-      <h3>Data Manager Consultant (Part-time)</h3>
-      <p><strong>The Barbados National Registry – The George Alleyne Chronic Disease Research Centre, Bridgetown, Barbados</strong><br>
-      August 01, 2023 – Present</p>
-      <ul>
-        <li>Data cleaning and analysis of national cardiovascular disease registry data (2023)</li>
-        <li>Data cleaning and analysis of national cardiovascular disease registry data (2019-2022)</li>
-        <li>Developed analysis reports for data analysed from cardiovascular disease and cancer registries</li>
-        <li>Developed national HEARTS hypertension dashboard for the automatic analysis and generation of periodic reports</li>
-        <li>Lead the training in process for data cleaning and analysis on cardiovascular disease and cancer data</li>
-        <li>Support ad-hoc data analysis request from stakeholders on data related to Barbados National registry</li>
-      </ul>
-      <h3>Online Facilitator and Statistical Advisor (Part-time)</h3>
-      <p><strong>Caribbean Institute for Health Research (CAHIR), The University of the West Indies, Mona and Global Campus, Jamaica</strong><br>
-      August 01, 2020 – Present</p>
-      <ul>
-        <li>Support the teaching of postgraduate courses in the MSc Epidemiology and Human Research and Epidemiology postgraduate diploma programmes</li>
-        <li>Lead in the supervision of postgraduate student research projects from MSc Epidemiology and Human Research and Epidemiology postgraduate diploma programmes</li>
-        <li>Advise students and staff on statistical procedures and analysis related to epidemiology and surveillance projects</li>
-      </ul>
-      <h3>Consultant Trainer (Part-time)</h3>
+      <h3>Consultant Trainer</h3>
       <p><strong>World Health Organization – Global Outbreak and Alert Response Network, Geneva, Switzerland</strong><br>
       April 04, 2020 – July 31, 2021</p>
       <ul>
