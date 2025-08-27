@@ -1,5 +1,3 @@
-# app.R
-
 library(shiny)
 library(shinydashboard)
 library(plotly)
@@ -35,7 +33,6 @@ professional_qualities <- data.frame(
 )
 
 # New professional qualities data format for ggradar
-# Note: The "Max" and "Min" rows are not needed for ggradar
 professional_qualities_ggradar <- data.frame(
   Diligence = 85,
   Task_orientated = 90,
@@ -49,7 +46,7 @@ professional_qualities_ggradar <- data.frame(
   Collaborative = 95
 )
 
-research_interests <- c("Chronic Non-Communicable Diseases", "Built Environment", "Nutrition", "Statistical Modeling", "Epidemiology", "Public Health Geoinformatics", "Geospatial Modelling", "Vaccine Safety Surveillance", "Digital Health")
+research_interests <- c("Chronic Non-Communicable Diseases", "Built Environment", "Nutrition", "Statistical Modeling", "Epidemiology", "Public Health Geoinformatics", "Geospatial Modelling", "Vaccine Safety Surveillance", "Digital Health", "Sports Competitve Balance")
 
 phd_text <- "Pursuing PhD in Epidemiology at the University of the West Indies. Focus: Geoinformatics applications to public health. Thesis involves spatial analysis of health data."
 
@@ -122,32 +119,24 @@ ui <- dashboardPage(
     )
   ),
   dashboardBody(
-    # Use tags$head to inject CSS
     tags$head(
       tags$style(
         HTML("
-          /* Make the main sidebar static and full-height */
           .main-sidebar {
             position: fixed !important;
             height: 100vh;
             overflow-y: auto;
           }
-          
-          /* Adjust the body content to prevent it from overlapping the fixed sidebar */
           .content-wrapper, .right-side {
             margin-left: 230px !important; 
           }
-          
-          /* Adjust the header to prevent it from overlapping the body content */
           .main-header {
             position: fixed !important;
             width: 100%;
             z-index: 1000;
           }
-
-          /* Add a top margin to the body to prevent content from being hidden behind the fixed header */
           .content-wrapper {
-            padding-top: 50px; /* Adjust based on your header's height */
+            padding-top: 50px;
           }
         ")
       )
@@ -175,6 +164,13 @@ ui <- dashboardPage(
                  ),
                  box(title = "Professional Skills", width = 6, solidHeader = TRUE, status = "primary",
                      DT::dataTableOutput("skillsTable")
+                 )
+               )
+      ),
+      tabPanel("Experience", icon = icon("briefcase"),
+               fluidRow(
+                 box(title = "Professional Experience", width = 12, solidHeader = TRUE, status = "primary",
+                     htmlOutput("experienceText")
                  )
                )
       ),
@@ -262,15 +258,12 @@ server <- function(input, output, session) {
   # Load and clean CSV data
   software_skills <- reactive({
     data <- read.csv("data/cv_software_skills.csv", stringsAsFactors = FALSE)
-    # Clean data: remove empty rows and handle missing values
     data <- data[complete.cases(data$Software.Name, data$Skill.Level), ]
     data$Category <- ifelse(data$Category == "", "Other", data$Category)
-    # Fix typo in Category
     data$Category <- gsub("Spaital Management and Analysis", "Spatial Management and Analysis", data$Category)
     data
   })
   
-  # New reactive expression to read publications data from CSV
   publications_data <- reactive({
     data <- read.csv("data/publications.csv", stringsAsFactors = FALSE)
     data
@@ -281,13 +274,11 @@ server <- function(input, output, session) {
     skills }, options = list(pageLength = 6, searching = FALSE, ordering = FALSE))
   
   output$qualitiesSpiderChart <- renderPlot({
-    # Reshape the data for ggradar
     data_radar <- professional_qualities_ggradar %>%
       mutate(group = "Score") %>%
       select(group, everything()) %>%
       as_tibble()
     
-    # Create the radar chart
     ggradar(
       data_radar,
       grid.min = 0,
@@ -335,33 +326,26 @@ server <- function(input, output, session) {
     )
   })
   
-  # Corrected renderUI for research interests
   output$researchInterests <- renderUI({
     tags$ul(
       lapply(research_interests, tags$li)
     )
   })
   
-  # Redo the plot using ggplot2
-  # Corrected to use renderPlot
   output$pubPlot <- renderPlot({
     pubs <- publications_data()
-    # Move the data preparation step inside renderPlot
     pubs_count <- pubs %>% count(Year)
     
-    # Create a data frame with all years from 2014 to 2025
     all_years <- data.frame(Year = 2014:2025)
     
-    # Join with publications data and replace NA counts with 0
     pubs_full_timeline <- all_years %>%
       left_join(pubs_count, by = "Year") %>%
       replace_na(list(n = 0))
     
-    # Create the bar chart using ggplot2
     ggplot(pubs_full_timeline, aes(x = as.factor(Year), y = n)) +
       geom_bar(stat = "identity", fill = "#de2d26") +
       labs(title = "Publications by Year", x = "Year", y = "Count") +
-      geom_text(aes(label = round(n, 1), y = n * 1.01), vjust = -0.5, size = 5) + # Corrected variable and placement
+      geom_text(aes(label = round(n, 1), y = n * 1.01), vjust = -0.5, size = 5) +
       theme_minimal() +
       theme(
         plot.title = element_text(hjust = 0.5, face = "bold"),
@@ -371,7 +355,6 @@ server <- function(input, output, session) {
       scale_x_discrete(breaks = as.character(2014:2025))
   })
   
-  # Update the pubTable to use the reactive data
   output$pubTable <- DT::renderDataTable({ publications_data() }, options = list(pageLength = 25))
   
   output$phdText <- renderText({ phd_text })
@@ -392,6 +375,77 @@ server <- function(input, output, session) {
   
   output$supportText <- renderText({ support_text })
   output$servicesTable <- DT::renderDataTable({ services }, options = list(pageLength = 5))
+  
+  output$experienceText <- renderUI({
+    HTML(
+      "<h3>International Consultant & Epidemiologist</h3>
+      <p><strong>Comprehensive Immunization Program (CIM) – Pan American Health Organization, Washington, DC, USA</strong><br>
+      August 01, 2021 – Present</p>
+      <ul>
+        <li>Serve as the focal point for all activities related to the strengthening of national vaccine surveillance systems in the 23 countries of English-speaking Caribbean sub-region</li>
+        <li>Support of the conduct of national level face-face workshops on vaccine safety with stakeholders from each of the countries of the Caribbean</li>
+        <li>Support in the digital transformation and implementation of the data capture, management and analysis mechanisms integral for the national vaccine surveillance system</li>
+        <li>Support the conceptualization, development, and implementation of projects aimed at improving the quality of ESAVI and AESI surveillance activities at the regional and national levels</li>
+        <li>Support the processes of case investigation, causality analysis and data analysis for the detection of signals</li>
+        <li>Lead the planning and implementation of activities related to bringing population awareness to national vaccine safety surveillance systems</li>
+        <li>Provide ad-hoc technical support to immunization teams on surveillance activities related to immunization</li>
+        <li>Co-lead the validation from Spanish to English on regional tools for strengthening national ESAVI surveillance systems</li>
+      </ul>
+      <h3>Data Manager Consultant (Part-time)</h3>
+      <p><strong>The Barbados National Registry – The George Alleyne Chronic Disease Research Centre, Bridgetown, Barbados</strong><br>
+      August 01, 2023 – Present</p>
+      <ul>
+        <li>Data cleaning and analysis of national cardiovascular disease registry data (2023)</li>
+        <li>Data cleaning and analysis of national cardiovascular disease registry data (2019-2022)</li>
+        <li>Developed analysis reports for data analysed from cardiovascular disease and cancer registries</li>
+        <li>Developed national HEARTS hypertension dashboard for the automatic analysis and generation of periodic reports</li>
+        <li>Lead the training in process for data cleaning and analysis on cardiovascular disease and cancer data</li>
+        <li>Support ad-hoc data analysis request from stakeholders on data related to Barbados National registry</li>
+      </ul>
+      <h3>Online Facilitator and Statistical Advisor (Part-time)</h3>
+      <p><strong>Caribbean Institute for Health Research (CAHIR), The University of the West Indies, Mona and Global Campus, Jamaica</strong><br>
+      August 01, 2020 – Present</p>
+      <ul>
+        <li>Support the teaching of postgraduate courses in the MSc Epidemiology and Human Research and Epidemiology postgraduate diploma programmes</li>
+        <li>Lead in the supervision of postgraduate student research projects from MSc Epidemiology and Human Research and Epidemiology postgraduate diploma programmes</li>
+        <li>Advise students and staff on statistical procedures and analysis related to epidemiology and surveillance projects</li>
+      </ul>
+      <h3>Consultant Trainer (Part-time)</h3>
+      <p><strong>World Health Organization – Global Outbreak and Alert Response Network, Geneva, Switzerland</strong><br>
+      April 04, 2020 – July 31, 2021</p>
+      <ul>
+        <li>Lead in the development of training resources related to mapping of COVID-19 data</li>
+        <li>Support training of stakeholders from the European; North & Central American; Caribbean and South American region on use of geographical information systems to responding to the COVID-19 pandemic</li>
+        <li>Support in the assessment and evaluation of training sessions</li>
+      </ul>
+      <h3>Epidemiologist/Research Analyst (Full-time)</h3>
+      <p><strong>The George Alleyne Chronic Disease Research Centre, Bridgetown, Barbados</strong><br>
+      July 01, 2019 – July 31, 2021</p>
+      <ul>
+        <li>Lead in the conduct of research projects related to epidemiological burden of chronic non-communicable diseases and their associated risk factors</li>
+        <li>Lead in the design of research studies and writing of research publications</li>
+        <li>Supported the conduct of evidence reviews related to nutrition interventions</li>
+        <li>Supported ad-hoc epidemiological data analysis requests from stakeholders within the Caribbean</li>
+      </ul>
+      <h3>Research & Statistical Consultant (Part-time)</h3>
+      <p><strong>CARICOM Community Secretariat, Turkenyn, Guyana</strong><br>
+      February 01, 2017 – August 31, 2019</p>
+      <ul>
+        <li>Lead the data analysis of employee data on change management interventions</li>
+        <li>Lead the development of analysis reports by department on change management results</li>
+        <li>Lead in the development of analysis insights to be coupled with employee communication activities</li>
+      </ul>
+      <h3>Researcher/Lecturer (Full-time)</h3>
+      <p><strong>Nutrition Group, Department of Agricultural Economics and Extension, The University of the West Indies, St. Augustine Campus, St. Augustine, Trinidad and Tobago</strong><br>
+      September 1st, 2014 – May 31st, 2017</p>
+      <ul>
+        <li>Lead in the development of undergraduate and postgraduate research and epidemiology courses for Nutrition and Dietetics</li>
+        <li>Lead teaching undergraduate and postgraduate courses related to Human Nutrition, Research Methods and Epidemiology</li>
+        <li>Lead in the supervising of undergraduate and postgraduate students in their final programme research projects</li>
+        <li>Lead in the design, implementation and analysis of the epidemiological research studies targeting nutritional behaviour and chronic non-communicable disease; environmental hazards and communicable disease in at risk populations</li>
+      </ul>"
+    )
+  })
 }
 
 # Run the app
