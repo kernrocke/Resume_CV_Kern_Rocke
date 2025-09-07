@@ -1,12 +1,23 @@
-library(shiny)
-library(shinydashboard)
-library(plotly)
-library(DT)
-library(fmsb)
-library(ggplot2)
-library(dplyr)
-library(tidyr)
-library(ggradar)
+
+#-------------------------------------------------------------------------------
+######################
+### Libraries ###
+#####################
+# Note: Add any new libraries to the list of libaries in libs
+
+#List of libaries needed
+libs <- c("shiny", "shinydashboard", "dplyr", "plotly", "DT", "fmsb", "ggplot2",
+          "tidyr", "ggradar")
+
+#Install missing libraries
+installed_libs <- libs %in% rownames(installed.packages())
+if (any(installed_libs == F)) {
+  install.packages(libs[!installed_libs])
+}
+
+#Load libraries
+invisible(lapply(libs, library, character.only = T))
+#-------------------------------------------------------------------------------
 
 # Hypothetical data based on website content
 home_text <- "My name is Kern Rocke, born in the twin island republic of Trinidad and Tobago and I now currently reside in Barbados. I am a researcher in the Caribbean working at the George Alleyne Chronic Disease Research Centre (GA-CDRC) as a Research Associate. I am also an international consultant focusing on vaccine safety surveillance at the Pan American Health Organization. I studied Human Nutrition and Dietetics at a Bachelor's level and then moved on to a Masters of Epidemiology. Currently I am pursuing my terminal degree in Epidemiology with a focus on Spatial Epidemiology.
