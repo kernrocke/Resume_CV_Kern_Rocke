@@ -1,11 +1,10 @@
-
 #-------------------------------------------------------------------------------
 ######################
 ### Libraries ###
 #####################
-# Note: Add any new libraries to the list of libaries in libs
+# Note: Add any new libraries to the list of libraries in libs
 
-#List of libaries needed
+#List of libraries needed
 libs <- c("shiny", "shinydashboard", "dplyr", "plotly", "DT", "fmsb", "ggplot2",
           "tidyr", "ggradar")
 
@@ -57,9 +56,9 @@ professional_qualities_ggradar <- data.frame(
   Collaborative = 95
 )
 
-research_interests <- c("Chronic Non-Communicable Diseases", "Built Environment", "Nutrition", "Statistical Modeling", "Epidemiology", "Public Health Geoinformatics", "Geospatial Modelling", "Vaccine Safety Surveillance", "Digital Health", "Sports Competitve Balance")
+research_interests <- c("Chronic Non-Communicable Diseases", "Built Environment", "Nutrition", "Statistical Modeling", "Epidemiology", "Public Health Geoinformatics", "Geospatial Modelling", "Vaccine Safety Surveillance", "Digital Health", "Sports Competitive Balance")
 
-phd_text <- "Pursuing PhD in Epidemiology at the University of the West Indies. Focus: Geoinformatics applications to public health and cardiovascular disease. Thesis involves spatial analysis of built environement and health data exploring from perspectives from marco -> micro -> individual level"
+phd_text <- "Pursuing PhD in Epidemiology at the University of the West Indies. Focus: Geoinformatics applications to public health and cardiovascular disease. Thesis involves spatial analysis of built environment and health data exploring from perspectives from macro -> micro -> individual level"
 
 phd_timeline <- data.frame(
   Year = c(2022, 2023, 2024, 2025),
@@ -126,7 +125,7 @@ ui <- dashboardPage(
                a(href = "https://www.linkedin.com/in/kern-rocke-168b5636/", target = "_blank", icon('linkedin', class = 'fa-3x', lib = "font-awesome"), style = "color: white;"),
                a(href = "https://github.com/kernrocke", target = "_blank", icon("github", class = "fa-3x", lib = "font-awesome"), style = "color: white;"),
                a(href = "mailto:kernrocke@gmail.com", target = "_blank", icon("envelope", class = 'fa-3x', lib = "font-awesome"), style = "color: white;")
-             ),
+             )
     )
   ),
   dashboardBody(
@@ -190,8 +189,11 @@ ui <- dashboardPage(
                  box(title = "Research Interests", width = 6, solidHeader = TRUE, status = "primary",
                      uiOutput("researchInterests")
                  ),
-                 box(title = "Publications Over Time", width = 6, solidHeader = TRUE, status = "primary",
-                     plotOutput("pubPlot")
+                 column(width = 6,
+                        valueBoxOutput("totalPublicationsBox", width = 12),
+                        box(title = "Publications Over Time", width = 12, solidHeader = TRUE, status = "primary",
+                            plotOutput("pubPlot")
+                        )
                  )
                ),
                fluidRow(
@@ -337,6 +339,16 @@ server <- function(input, output, session) {
     )
   })
   
+  output$totalPublicationsBox <- renderValueBox({
+    total_pubs <- nrow(publications_data())
+    valueBox(
+      value = total_pubs,
+      subtitle = "Total Publications",
+      icon = icon("book"),
+      color = "red"
+    )
+  })
+  
   output$researchInterests <- renderUI({
     tags$ul(
       lapply(research_interests, tags$li)
@@ -389,7 +401,7 @@ server <- function(input, output, session) {
   
   output$experienceText <- renderUI({
     HTML(
-     "<h3>Data Manager/Analyst Consultant</h3>
+      '<h3><img src="bnr_logo.png" style="vertical-align:middle; margin-right:10px; width:90px;">Data Manager/Analyst Consultant</h3>
         <p><strong>The Barbados National Registry – The George Alleyne Chronic Disease Research Centre, Bridgetown, Barbados</strong><br>
         August 01, 2023 – Present</p>
         <ul>
@@ -400,7 +412,7 @@ server <- function(input, output, session) {
         <li>Lead the training in process for data cleaning and analysis on cardiovascular disease and cancer data</li>
         <li>Support ad-hoc data analysis request from stakeholders on data related to Barbados National registry</li>
         </ul>
-      <h3>Online Facilitator and Statistical Advisor (Part-time)</h3>
+      <h3><img src="uwi_global.png" style="vertical-align:middle; margin-right:10px; width:90px;">Online Facilitator and Statistical Advisor (Part-time)</h3>
       <p><strong>Caribbean Institute for Health Research (CAHIR), The University of the West Indies, Mona and Global Campus, Jamaica</strong><br>
       August 01, 2020 – Present</p>
       <ul>
@@ -408,7 +420,7 @@ server <- function(input, output, session) {
         <li>Lead in the supervision of postgraduate student research projects from MSc Epidemiology and Human Research and Epidemiology postgraduate diploma programmes</li>
         <li>Advise students and staff on statistical procedures and analysis related to epidemiology and surveillance projects</li>
       </ul>  
-      <h3>International Consultant & Epidemiologist</h3>
+      <h3><img src="paho_logo.png" style="vertical-align:middle; margin-right:10px; width:90px;">International Consultant & Epidemiologist</h3>
       <p><strong>Comprehensive Immunization Program (CIM) – Pan American Health Organization, Washington, DC, USA</strong><br>
       August 01, 2021 – July 2024</p>
       <ul>
@@ -421,7 +433,7 @@ server <- function(input, output, session) {
         <li>Provide ad-hoc technical support to immunization teams on surveillance activities related to immunization</li>
         <li>Co-lead the validation from Spanish to English on regional tools for strengthening national ESAVI surveillance systems</li>
       </ul>
-      <h3>Consultant Trainer</h3>
+      <h3><img src="goarn_logo.png" style="vertical-align:middle; margin-right:10px; width:90px;">Consultant Trainer</h3>
       <p><strong>World Health Organization – Global Outbreak and Alert Response Network, Geneva, Switzerland</strong><br>
       April 04, 2020 – July 31, 2021</p>
       <ul>
@@ -429,7 +441,7 @@ server <- function(input, output, session) {
         <li>Support training of stakeholders from the European; North & Central American; Caribbean and South American region on use of geographical information systems to responding to the COVID-19 pandemic</li>
         <li>Support in the assessment and evaluation of training sessions</li>
       </ul>
-      <h3>Epidemiologist/Research Analyst (Full-time)</h3>
+      <h3><img src="cdrc_logo.png" style="vertical-align:middle; margin-right:10px; width:90px;">Epidemiologist/Research Analyst (Full-time)</h3>
       <p><strong>The George Alleyne Chronic Disease Research Centre, Bridgetown, Barbados</strong><br>
       July 01, 2019 – July 31, 2021</p>
       <ul>
@@ -438,7 +450,7 @@ server <- function(input, output, session) {
         <li>Supported the conduct of evidence reviews related to nutrition interventions</li>
         <li>Supported ad-hoc epidemiological data analysis requests from stakeholders within the Caribbean</li>
       </ul>
-      <h3>Research & Statistical Consultant (Part-time)</h3>
+      <h3><img src="caricom_logo.png" style="vertical-align:middle; margin-right:10px; width:90px;">Research & Statistical Consultant (Part-time)</h3>
       <p><strong>CARICOM Community Secretariat, Turkenyn, Guyana</strong><br>
       February 01, 2017 – August 31, 2019</p>
       <ul>
@@ -446,7 +458,7 @@ server <- function(input, output, session) {
         <li>Lead the development of analysis reports by department on change management results</li>
         <li>Lead in the development of analysis insights to be coupled with employee communication activities</li>
       </ul>
-      <h3>Researcher/Lecturer (Full-time)</h3>
+      <h3><img src="uwista_logo.png" style="vertical-align:middle; margin-right:10px; width:90px;">Researcher/Lecturer (Full-time)</h3>
       <p><strong>Nutrition Group, Department of Agricultural Economics and Extension, The University of the West Indies, St. Augustine Campus, St. Augustine, Trinidad and Tobago</strong><br>
       September 1st, 2014 – May 31st, 2017</p>
       <ul>
@@ -454,7 +466,7 @@ server <- function(input, output, session) {
         <li>Lead teaching undergraduate and postgraduate courses related to Human Nutrition, Research Methods and Epidemiology</li>
         <li>Lead in the supervising of undergraduate and postgraduate students in their final programme research projects</li>
         <li>Lead in the design, implementation and analysis of the epidemiological research studies targeting nutritional behaviour and chronic non-communicable disease; environmental hazards and communicable disease in at risk populations</li>
-      </ul>"
+      </ul>'
     )
   })
 }
