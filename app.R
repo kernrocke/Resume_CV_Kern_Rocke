@@ -1,25 +1,23 @@
-
 #-------------------------------------------------------------------------------
 ######################
 ### Libraries ###
 #####################
-# Note: Add any new libraries to the list of libraries in libs
 
-#List of libraries needed
+# List of libraries needed
 libs <- c("shiny", "shinydashboard", "dplyr", "plotly", "DT", "fmsb", "ggplot2",
-          "tidyr", "fmsb", "scales", "rsconnect")
+          "tidyr", "scales")
 
-#Install missing libraries
+# Install missing libraries
 installed_libs <- libs %in% rownames(installed.packages())
 if (any(installed_libs == F)) {
   install.packages(libs[!installed_libs])
 }
 
-#Load libraries
+# Load libraries
 invisible(lapply(libs, library, character.only = T))
 #-------------------------------------------------------------------------------
 
-# Hypothetical data based on website content
+# Data
 home_text <- "My name is Kern Rocke, born in the twin island republic of Trinidad and Tobago and I now currently reside in Barbados. I am a researcher in the Caribbean working at the George Alleyne Chronic Disease Research Centre (GA-CDRC) as a Research Associate. I am also an international consultant focusing on vaccine safety surveillance at the Pan American Health Organization. I studied Human Nutrition and Dietetics at a Bachelor's level and then moved on to a Masters of Epidemiology. Currently I am pursuing my terminal degree in Epidemiology with a focus on Spatial Epidemiology.
 
 I worked as a researcher with Nutrition Research Group at the Department of Agricultural Economics and Extension in Trinidad from 2015-2017 working on a variety of projects centred around population health behaviours and nutritional status. During my time there, I also worked as a part-time lecturer for the BSc Human Nutrition and Dietetics programme teaching in areas of research methods, biostatistics, community nutrition, physiology and health and, nutrition and metabolism. From 2017-2019, I worked as a Statistical Consultant with the CARICOM Secretariat in Guyana analysing data related to employee engagement. From 2019-present I am working in Barbados at the GA-CDRC on the interlinks between built environment, walkability, physical activity and metabolic health which links with my PhD work. Furthermore, at PAHO I worked with countries from the English speaking Caribbean on further strengthening their national ESAVI (Events Supposedly Attributable to Vaccination or Immunization) surveillance."
@@ -27,34 +25,6 @@ I worked as a researcher with Nutrition Research Group at the Department of Agri
 skills <- data.frame(
   Skill = c("Project Management", "Data Analysis", "Research Design", "Report Writing", "Data Visualization", "Epidemiology"),
   Proficiency = c("Expert", "Advanced", "Advanced", "Advanced", "Expert", "Advanced")
-)
-
-professional_qualities <- data.frame(
-  Diligence = c(85, 100, 0),
-  Task_orientated = c(90, 100, 0),
-  Self_motivated = c(95, 100, 0),
-  Communication = c(80, 100, 0),
-  Leadership = c(85, 100, 0),
-  Creativity = c(70, 100, 0),
-  Analytical = c(95, 100, 0),
-  Technical = c(95, 100, 0),
-  Adaptable = c(90, 100, 0),
-  Collaborative = c(95, 100, 0),
-  row.names = c("Score", "Max", "Min")
-)
-
-# New professional qualities data format for ggradar
-professional_qualities_ggradar <- data.frame(
-  Diligence = 85,
-  Task_orientated = 90,
-  Self_motivated = 95,
-  Communication = 80,
-  Leadership = 85,
-  Creativity = 70,
-  Analytical = 95,
-  Technical = 95,
-  Adaptable = 90,
-  Collaborative = 95
 )
 
 research_interests <- c("Chronic Non-Communicable Diseases", "Built Environment", "Nutrition", "Statistical Modeling", "Epidemiology", "Public Health Geoinformatics", "Geospatial Modelling", "Vaccine Safety Surveillance", "Digital Health", "Sports Competitive Balance")
@@ -271,34 +241,52 @@ ui <- dashboardPage(
 server <- function(input, output, session) {
   # Load and clean CSV data
   software_skills <- reactive({
-    data <- read.csv("data/cv_software_skills.csv", stringsAsFactors = FALSE)
-    data <- data[complete.cases(data$Software.Name, data$Skill.Level), ]
-    data$Category <- ifelse(data$Category == "", "Other", data$Category)
-    data$Category <- gsub("Spaital Management and Analysis", "Spatial Management and Analysis", data$Category)
-    data
+    tryCatch({
+      data <- read.csv("data/cv_software_skills.csv", stringsAsFactors = FALSE)
+      data <- data[complete.cases(data$Software.Name, data$Skill.Level), ]
+      data$Category <- ifelse(is.na(data$Category) | data$Category == "", "Other", data$Category)
+      data$Category <- gsub("Spaital Management and Analysis", "Spatial Management and Analysis", data$Category)
+      data
+    }, error = function(e) {
+      data.frame(
+        Software.Name = "No data available",
+        Skill.Level = "N/A", 
+        Category = "N/A"
+      )
+    })
   })
   
   publications_data <- reactive({
-    data <- read.csv("data/publications.csv", stringsAsFactors = FALSE)
-    data
+    tryCatch({
+      read.csv("data/publications.csv", stringsAsFactors = FALSE)
+    }, error = function(e) {
+      data.frame(
+        Title = "No publications data available",
+        Year = 2024,
+        Journal = "N/A"
+      )
+    })
   })
   
   output$homeText <- renderText({ home_text })
   output$skillsTable <- DT::renderDataTable({
     skills }, options = list(pageLength = 6, searching = FALSE, ordering = FALSE))
   
-  # Replace your output$qualitiesSpiderChart section with this:
+  # Fixed spider chart using fmsb
   output$qualitiesSpiderChart <- renderPlot({
-    # Prepare data for fmsb radar chart
-    radar_data <- rbind(
-      rep(100, 10),  # max values
-      rep(0, 10),    # min values
-      c(85, 90, 95, 80, 85, 70, 95, 95, 90, 95)  # actual values
+    # Prepare data for fmsb radar chart - must be data.frame
+    radar_data <- data.frame(
+      Diligence = c(100, 0, 85),
+      Task_orientated = c(100, 0, 90),
+      Self_motivated = c(100, 0, 95),
+      Communication = c(100, 0, 80),
+      Leadership = c(100, 0, 85),
+      Creativity = c(100, 0, 70),
+      Analytical = c(100, 0, 95),
+      Technical = c(100, 0, 95),
+      Adaptable = c(100, 0, 90),
+      Collaborative = c(100, 0, 95)
     )
-    
-    colnames(radar_data) <- c("Diligence", "Task_orientated", "Self_motivated", 
-                              "Communication", "Leadership", "Creativity", 
-                              "Analytical", "Technical", "Adaptable", "Collaborative")
     
     # Create the radar chart using fmsb
     radarchart(radar_data, 
@@ -311,8 +299,7 @@ server <- function(input, output, session) {
                axislabcol = "black",
                caxislabels = seq(0, 100, 25),
                cglwd = 0.8,
-               vlcex = 0.8,
-               title = "Professional Qualities")
+               vlcex = 0.8)
   })
   
   output$certificationsTable <- DT::renderDataTable({
@@ -478,6 +465,5 @@ server <- function(input, output, session) {
   })
 }
 
-rsconnect::writeManifest()
 # Run the app
 shinyApp(ui, server)
