@@ -1,9 +1,4 @@
 
-# Install if not already installed
-install.packages("remotes")
-
-remotes::install_github("ricardo-bion/ggradar")
-
 #-------------------------------------------------------------------------------
 ######################
 ### Libraries ###
@@ -12,7 +7,7 @@ remotes::install_github("ricardo-bion/ggradar")
 
 #List of libraries needed
 libs <- c("shiny", "shinydashboard", "dplyr", "plotly", "DT", "fmsb", "ggplot2",
-          "tidyr", "ggradar", "rsconnect")
+          "tidyr", "fmsb", "scales", "rsconnect")
 
 #Install missing libraries
 installed_libs <- libs %in% rownames(installed.packages())
@@ -477,5 +472,6 @@ server <- function(input, output, session) {
   })
 }
 
+rsconnect::writeManifest()
 # Run the app
 shinyApp(ui, server)
