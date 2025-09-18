@@ -1,3 +1,9 @@
+
+# Install if not already installed
+install.packages("remotes")
+
+remotes::install_github("ricardo-bion/ggradar")
+
 #-------------------------------------------------------------------------------
 ######################
 ### Libraries ###
@@ -6,7 +12,7 @@
 
 #List of libraries needed
 libs <- c("shiny", "shinydashboard", "dplyr", "plotly", "DT", "fmsb", "ggplot2",
-          "tidyr", "ggradar")
+          "tidyr", "ggradar", "rsconnect")
 
 #Install missing libraries
 installed_libs <- libs %in% rownames(installed.packages())
