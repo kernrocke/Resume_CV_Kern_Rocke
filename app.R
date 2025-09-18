@@ -287,26 +287,32 @@ server <- function(input, output, session) {
   output$skillsTable <- DT::renderDataTable({
     skills }, options = list(pageLength = 6, searching = FALSE, ordering = FALSE))
   
+  # Replace your output$qualitiesSpiderChart section with this:
   output$qualitiesSpiderChart <- renderPlot({
-    data_radar <- professional_qualities_ggradar %>%
-      mutate(group = "Score") %>%
-      select(group, everything()) %>%
-      as_tibble()
-    
-    ggradar(
-      data_radar,
-      grid.min = 0,
-      grid.max = 100,
-      grid.mid = 50,
-      base.size = 1.2,
-      axis.label.size = 4,
-      legend.position = "none",
-      values.radar = c("0", "50", "100"),
-      background.circle.colour = "white",
-      fill = TRUE,
-      fill.alpha = 0.4,
-      group.colours = "#2ca25f"
+    # Prepare data for fmsb radar chart
+    radar_data <- rbind(
+      rep(100, 10),  # max values
+      rep(0, 10),    # min values
+      c(85, 90, 95, 80, 85, 70, 95, 95, 90, 95)  # actual values
     )
+    
+    colnames(radar_data) <- c("Diligence", "Task_orientated", "Self_motivated", 
+                              "Communication", "Leadership", "Creativity", 
+                              "Analytical", "Technical", "Adaptable", "Collaborative")
+    
+    # Create the radar chart using fmsb
+    radarchart(radar_data, 
+               axistype = 1,
+               pcol = "#2ca25f",
+               pfcol = scales::alpha("#2ca25f", 0.4),
+               plwd = 2,
+               cglcol = "grey",
+               cglty = 1,
+               axislabcol = "black",
+               caxislabels = seq(0, 100, 25),
+               cglwd = 0.8,
+               vlcex = 0.8,
+               title = "Professional Qualities")
   })
   
   output$certificationsTable <- DT::renderDataTable({
