@@ -4,17 +4,28 @@
 #####################
 
 # List of libraries needed
-libs <- c("shiny", "shinydashboard", "dplyr", "plotly", "DT", "fmsb", "ggplot2",
-          "tidyr", "scales")
+#libs <- c("shiny", "shinydashboard", "dplyr", "plotly", "DT", "fmsb", "ggplot2",
+#          "tidyr", "scales")
 
 # Install missing libraries
-installed_libs <- libs %in% rownames(installed.packages())
-if (any(installed_libs == F)) {
-  install.packages(libs[!installed_libs])
-}
+#installed_libs <- libs %in% rownames(installed.packages())
+#if (any(installed_libs == F)) {
+#  install.packages(libs[!installed_libs])
+#}
 
 # Load libraries
-invisible(lapply(libs, library, character.only = T))
+#invisible(lapply(libs, library, character.only = T))
+
+library(shiny)
+library(shinydashboard)
+library(dplyr)
+library(plotly)
+library(DT)
+library(fmsb)
+library(ggplot2)
+library(tidyr)
+library(scales)
+
 #-------------------------------------------------------------------------------
 
 # Data
